@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>YouTune</title>
+
+<style>
+:root{
+    --bg:#090909;
+    --card:#141414;
+    --accent:#ff2d55;
+    --text:#ffffff;
+    --muted:#a0a0a0;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Segoe UI, sans-serif;
+}
+
+body{
+    background:radial-gradient(circle at center,
+    rgba(255,40,80,.25),
+    #090909 60%);
+
+    color:var(--text);
+    min-height:100vh;
+    overflow-x:hidden;
+}
+
+.header{
+    padding:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.logo{
+    font-size:28px;
+    font-weight:bold;
+    color:var(--accent);
+}
+
+.top-buttons{
+    display:flex;
+    gap:10px;
+}
+
+button{
+    background:var(--accent);
+    border:none;
+    color:white;
+    padding:10px 15px;
+    border-radius:12px;
+    cursor:pointer;
+}
+
+.main{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:20px;
+    padding:20px;
+}
+
+.player-section{
+    background:rgba(20,20,20,.8);
+    border-radius:24px;
+    overflow:hidden;
+    box-shadow:
+    0 0 50px rgba(255,40,80,.25);
+}
+
+.video-container{
+    aspect-ratio:16/9;
+}
+
+.video-container iframe{
+    width:100%;
+    height:100%;
+    border:none;
+}
+
+.info{
+    padding:20px;
+}
+
+.title{
+    font-size:24px;
+    font-weight:700;
+}
+
+.artist{
+    margin-top:8px;
+    color:var(--muted);
+}
+
+.controls{
+    margin-top:15px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.playlist{
+    background:rgba(20,20,20,.8);
+    border-radius:24px;
+    padding:20px;
+    box-shadow:
+    0 0 50px rgba(255,40,80,.15);
+}
+
+.playlist h2{
+    margin-bottom:15px;
+}
+
+.song{
+    padding:12px;
+    border-radius:12px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.song:hover{
+    background:#222;
+}
+
+.song.active{
+    background:rgba(255,45,85,.25);
+}
+
+.next{
+    margin-top:20px;
+    color:var(--muted);
+    font-size:14px;
+}
+
+.music-mode .main{
+    grid-template-columns:1fr;
+}
+
+.music-mode .playlist{
+    display:none;
+}
+
+.music-mode .video-container{
+    max-width:500px;
+    margin:auto;
+}
+
+.music-mode .title{
+    text-align:center;
+    font-size:36px;
+}
+
+.music-mode .artist{
+    text-align:center;
+}
+
+.music-mode .controls{
+    justify-content:center;
+}
+
+@media(max-width:900px){
+
+.main{
+    grid-template-columns:1fr;
+}
+
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo">🎵 YouTune</div>
+
+    <div class="top-buttons">
+        <button onclick="toggleMusicMode()">
+            Music Mode
+        </button>
+
+        <button onclick="castMedia()">
+            Cast
+        </button>
+    </div>
+</div>
+
+<div class="main">
+
+    <div class="player-section">
+
+        <div class="video-container">
+            https://www.youtube.com/embed/kXYiU_JCYtU
+            </iframe>
+        </div>
+
+        <div class="info">
+
+            <div class="title" id="songTitle">
+                Linkin Park - Numb
+            </div>
+
+            <div class="artist">
+                YouTube Music Style Demo
+            </div>
+
+            <div class="controls">
+                <button onclick="prevSong()">⏮</button>
+                <button onclick="playSong()">▶</button>
+                <button onclick="nextSong()">⏭</button>
+                <button>🔀</button>
+                <button>🔁</button>
+            </div>
+
+            <div class="next" id="nextSongText">
+                Následuje: Imagine Dragons - Bones
+            </div>
+
+        </div>
+    </div>
+
+    <div class="playlist">
+
+        <h2>Playlist</h2>
+
+        <div class="song active" onclick="loadSong(0)">
+            Linkin Park - Numb
+        </div>
+
+        <div class="song" onclick="loadSong(1)">
+            Imagine Dragons - Bones
+        </div>
+
+        <div class="song" onclick="loadSong(2)">
+            Imagine Dragons - Demons
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const songs = [
+{
+title:"Linkin Park - Numb",
+video:"kXYiU_JCYtU"
+},
+{
+title:"Imagine Dragons - Bones",
+video:"TO-_3tck2tg"
+},
+{
+title:"Imagine Dragons - Demons",
+video:"mWRsgZuwf_8"
+}
+];
+
+let current = 0;
+
+function loadSong(index){
+
+current = index;
+
+document.getElementById("player").src =
+`https://www.youtube.com/embed/${songs[index].video}?autoplay=1`;
+
+document.getElementById("songTitle").innerText =
+songs[index].title;
+
+document.querySelectorAll(".song")
+.forEach(s=>s.classList.remove("active"));
+
+document.querySelectorAll(".song")[index]
+.classList.add("active");
+
+let next = index + 1;
+
+if(next < songs.length){
+
+document.getElementById("nextSongText")
+.innerText =
+"Následuje: " + songs[next].title;
+
+}else{
+
+document.getElementById("nextSongText")
+.innerText =
+"Konec playlistu";
+
+}
+
+}
+
+function nextSong(){
+
+if(current < songs.length - 1){
+
+loadSong(current + 1);
+
+}
+
+}
+
+function prevSong(){
+
+if(current > 0){
+
+loadSong(current - 1);
+
+}
+
+}
+
+function playSong(){
+
+loadSong(current);
+
+}
+
+function toggleMusicMode(){
+
+document.body.classList.toggle("music-mode");
+
+}
+
+function castMedia(){
+
+alert(
+"Google Cast API lze doplnit po nasazení na server."
+);
+
+}
+
+</script>
+
+</body>
+</html>
